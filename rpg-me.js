@@ -35,6 +35,8 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
     this.hatColor = 0;
     this.hat = "none";
     this.fire = false; 
+    this.walking = false; 
+    this.circle = false; 
   }
 
   // Lit reactive properties
@@ -54,6 +56,8 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
       hatColor: { type: Number },
       hat: { type: String },
       fire: { type: Boolean },
+      walking: { type: Boolean },
+      circle: { type: Boolean },
     };
   }
 
@@ -120,10 +124,12 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
             hatColor="${this.hatColor}"
             hat="${this.hat}"
             ?fire="${this.fire}"
+            ?walking="${this.walking}"
+            ?circle="${this.circle}"
           ></rpg-character>
         </div>
         <div class="controls">
-          <label for="name">Seed:</label>
+          <label for="seed">Seed:</label>
           <input type="number" value="${this.seed}" @input="${this.updateProperty('seed')}">
 
           <label for="accessories">Accessories:</label>
@@ -170,6 +176,12 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
 
           <label for="fire">On Fire:</label>
           <input type="checkbox" .checked="${this.fire}" @change="${this.updateProperty('fire')}">
+
+          <label for="walking">Walking:</label>
+          <input type="checkbox" .checked="${this.walking}" @change="${this.updateProperty('walking')}">
+
+          <label for="circle">Circle:</label>
+          <input type="checkbox" .checked="${this.circle}" @change="${this.updateProperty('circle')}">
 
         </div>
       </div>
