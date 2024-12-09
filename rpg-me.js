@@ -24,15 +24,17 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
     super();
     this.title = "Make Your Character";
     this.seed = "1234567890";
-    this.accessories = 1;
-    this.base = 1;
-    this.face = 1;
-    this.faceItem = 1;
-    this.hair = 1;
-    this.pants = 1;
-    this.shirt = 1;
-    this.skin = 1;
-    this.size = 300; // Default size
+    this.accessories = 0;
+    this.base = 0;
+    this.face = 0;
+    this.faceItem = 0;
+    this.hair = 0;
+    this.pants = 0;
+    this.shirt = 0;
+    this.skin = 0;
+    this.hatColor = 0;
+    this.hat = "none";
+    this.fire = false; 
   }
 
   // Lit reactive properties
@@ -49,7 +51,9 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
       pants: { type: Number },
       shirt: { type: Number },
       skin: { type: Number },
-      size: { type: Number },
+      hatColor: { type: Number },
+      hat: { type: String },
+      fire: { type: Boolean },
     };
   }
 
@@ -113,7 +117,9 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
             pants="${this.pants}"
             shirt="${this.shirt}"
             skin="${this.skin}"
-            style="height: ${this.size}px; width: ${this.size}px;"
+            hatColor="${this.hatColor}"
+            hat="${this.hat}"
+            ?fire="${this.fire}"
           ></rpg-character>
         </div>
         <div class="controls">
@@ -121,31 +127,50 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
           <input type="number" value="${this.seed}" @input="${this.updateProperty('seed')}">
 
           <label for="accessories">Accessories:</label>
-          <input type="number" min="1" max ="9" value="${this.accessories}" @input="${this.updateProperty('accessories')}">
+          <input type="number" min="0" max ="9" value="${this.accessories}" @input="${this.updateProperty('accessories')}">
 
           <label for="base">Base:</label>
-          <input type="number" min="1" max ="2" value="${this.base}" @input="${this.updateProperty('base')}">
+          <input type="number" min="0" max ="9" value="${this.base}" @input="${this.updateProperty('base')}">
 
           <label for="face">Face:</label>
-          <input type="number" min="1" max ="5" value="${this.face}" @input="${this.updateProperty('face')}">
+          <input type="number" min="0" max ="5" value="${this.face}" @input="${this.updateProperty('face')}">
 
           <label for="faceItem">Face Item:</label>
-          <input type="number" min="1" max ="9" value="${this.faceItem}" @input="${this.updateProperty('faceItem')}">
+          <input type="number" min="0" max ="9" value="${this.faceItem}" @input="${this.updateProperty('faceItem')}">
 
           <label for="hair">Hair:</label>
-          <input type="number" min="1" max ="9" value="${this.hair}" @input="${this.updateProperty('hair')}">
+          <input type="number" min="0" max ="9" value="${this.hair}" @input="${this.updateProperty('hair')}">
 
           <label for="pants">Pants:</label>
-          <input type="number" min="1" max ="9" value="${this.pants}" @input="${this.updateProperty('pants')}">
+          <input type="number" min="0" max ="9" value="${this.pants}" @input="${this.updateProperty('pants')}">
 
           <label for="shirt">Shirt:</label>
-          <input type="number" min="1" max ="9" value="${this.shirt}" @input="${this.updateProperty('shirt')}">
+          <input type="number" min="0" max ="9" value="${this.shirt}" @input="${this.updateProperty('shirt')}">
 
           <label for="skin">Skin:</label>
-          <input type="number" min="1" max ="9" value="${this.skin}" @input="${this.updateProperty('skin')}">
+          <input type="number" min="0" max ="9" value="${this.skin}" @input="${this.updateProperty('skin')}">
 
-          <label for="size">Size:</label>
-          <input type="number" min="100" max="600" value="${this.size}" @input="${this.updateProperty('size')}">
+          <label for="hatColor">Hat Color:</label>
+          <input type="number" min="0" max ="9" value="${this.hatColor}" @input="${this.updateProperty('hatColor')}">
+
+          <label for="hat">Hat:</label>
+          <select value="${this.hat}" @change="${this.updateProperty('hat')}">
+            <option value="none" ?selected="${this.hat === 'none'}">None</option>
+            <option value="bunny" ?selected="${this.hat === 'bunny'}">Bunny</option>
+            <option value="coffee" ?selected="${this.hat === 'coffee'}">Coffee</option>
+            <option value="construction" ?selected="${this.hat === 'construction'}">Construction</option>
+            <option value="cowboy" ?selected="${this.hat === 'cowboy'}">Cowboy</option>
+            <option value="education" ?selected="${this.hat === 'education'}">Education</option>
+            <option value="knight" ?selected="${this.hat === 'knight'}">Knight</option>
+            <option value="ninja" ?selected="${this.hat === 'ninja'}">Ninja</option>
+            <option value="party" ?selected="${this.hat === 'party'}">Party</option>
+            <option value="pirate" ?selected="${this.hat === 'pirate'}">Pirate</option>
+            <option value="watermelon" ?selected="${this.hat === 'watermelon'}">Watermelon</option>
+          </select>
+
+          <label for="fire">On Fire:</label>
+          <input type="checkbox" .checked="${this.fire}" @change="${this.updateProperty('fire')}">
+
         </div>
       </div>
     `;
@@ -153,7 +178,8 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
 
   updateProperty(property) {
     return (e) => {
-      this[property] = e.target.value;
+      const value = e.target.type === "checkbox" ? e.target.checked : e.target.value;
+      this[property] = value;
     };
   }
 
