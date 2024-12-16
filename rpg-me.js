@@ -2,6 +2,7 @@ import { LitElement, html, css } from "lit";
 import { DDDSuper } from "@haxtheweb/d-d-d/d-d-d.js";
 import { I18NMixin } from "@haxtheweb/i18n-manager/lib/I18NMixin.js";
 import './node_modules/@haxtheweb/rpg-character/rpg-character.js';
+import { WiredCheckbox, WiredInput, WiredButton } from 'wired-elements';
 
 /**
  * `rpg-me`
@@ -28,10 +29,14 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
     this.shirt = 0;
     this.skin = 0;
     this.hatColor = 0;
+    this.size = 100;
     this.hat = "none";
     this.fire = false; 
     this.walking = false; 
     this.circle = false; 
+    this.leg = 0;
+    this.literalseed = true; 
+    this.initializeFromUrl();
   }
 
   // Lit reactive properties
@@ -48,12 +53,52 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
       pants: { type: Number },
       shirt: { type: Number },
       skin: { type: Number },
+      size: { type: Number },
       hatColor: { type: Number },
       hat: { type: String },
       fire: { type: Boolean },
       walking: { type: Boolean },
       circle: { type: Boolean },
+      leg: { type: Number },
+      literalseed: { type: Boolean },
     };
+  }
+
+  initializeFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("seed")) {
+      this.seed = params.get("seed");
+    }
+    if (params.has("hat")) {
+      this.hat = params.get("hat");
+    }
+    if (params.has("fire")) {
+      this.fire = params.get("fire") === "true";
+    }
+    if (params.has("literalseed")) {
+      this.literalseed = params.get("literalseed") === "true";
+    }
+    if (params.has("walking")) {
+      this.walking = params.get("walking") === "true";
+    }
+    if (params.has("circle")) {
+      this.circle = params.get("circle") === "true";
+    }
+    // Decode seed into character properties
+    if (this.seed.length === 9) {
+      const seedArray = Array.from(this.seed).map(Number);
+      [
+        this.accessories,
+        this.base,
+        this.face,
+        this.faceItem,
+        this.hair,
+        this.pants,
+        this.shirt,
+        this.skin,
+        this.hatColor,
+      ] = seedArray;
+    }
   }
 
   // Lit scoped styles
@@ -77,7 +122,7 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
       }
       .controls {
         display: grid;
-        grid-template-columns: 1fr 1fr; /* Two equal columns */
+        grid-template-columns: 1fr 1fr; 
         gap: 15px;
         margin-top: 20px;
       }
@@ -96,13 +141,13 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        min-height: 400px; /* Increased height for the preview area */
-        max-height: 600px; /* Optional max-height for scaling */
-        max-width: 600px; /* Optional max-width for scaling */
+        min-height: 400px; 
+        max-height: 600px;
+        max-width: 600px; 
       }
       .controls {
         flex: 1;
-        max-width: 600px; /* Ensure the controls area doesn't stretch too much */
+        max-width: 600px;
       }
     `];
   }
@@ -113,6 +158,9 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
         <div class="character-view">
           <h3>${this.title}</h3>
           <rpg-character
+            initialseed
+            seed="${this.seed}"
+            literalseed="${this.literalseed}"
             accessories="${this.accessories}"
             base="${this.base}"
             face="${this.face}"
@@ -121,43 +169,50 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
             pants="${this.pants}"
             shirt="${this.shirt}"
             skin="${this.skin}"
+            size="${this.size}"
             hatColor="${this.hatColor}"
             hat="${this.hat}"
             ?fire="${this.fire}"
             ?walking="${this.walking}"
             ?circle="${this.circle}"
+            leg="${this.leg}"
           ></rpg-character>
           <div class="seed-display">
             <strong>Seed:</strong> ${this.seed}
+            <br />
+            <wired-button @click="${this.generateShareLink}">Generate Share Link</wired-button>
           </div>
         </div>
         <div class="controls">
           <label for="accessories">Accessories:</label>
-          <input type="number" min="0" max="9" value="${this.accessories}" @input="${this.updateProperty('accessories')}">
+          <wired-input type="number" min="0" max="9" value="${this.accessories}" @input="${this.updateProperty('accessories')}"></wired-input>
   
           <label for="base">Base:</label>
-          <input type="number" min="0" max="9" value="${this.base}" @input="${this.updateProperty('base')}">
+          <wired-input type="number" min="0" max="9" value="${this.base}" @input="${this.updateProperty('base')}"></wired-input>
   
           <label for="face">Face:</label>
-          <input type="number" min="0" max="9" value="${this.face}" @input="${this.updateProperty('face')}">
+          <wired-input type="number" min="0" max="9" value="${this.face}" @input="${this.updateProperty('face')}"></wired-input>
   
           <label for="faceItem">Face Item:</label>
-          <input type="number" min="0" max="9" value="${this.faceItem}" @input="${this.updateProperty('faceItem')}">
+          <wired-input type="number" min="0" max="9" value="${this.faceItem}" @input="${this.updateProperty('faceItem')}"></wired-input>
   
           <label for="hair">Hair:</label>
-          <input type="number" min="0" max="9" value="${this.hair}" @input="${this.updateProperty('hair')}">
+          <wired-input type="number" min="0" max="9" value="${this.hair}" @input="${this.updateProperty('hair')}"></wired-input>
   
           <label for="pants">Pants:</label>
-          <input type="number" min="0" max="9" value="${this.pants}" @input="${this.updateProperty('pants')}">
+          <wired-input type="number" min="0" max="9" value="${this.pants}" @input="${this.updateProperty('pants')}"></wired-input>
   
           <label for="shirt">Shirt:</label>
-          <input type="number" min="0" max="9" value="${this.shirt}" @input="${this.updateProperty('shirt')}">
+          <wired-input type="number" min="0" max="9" value="${this.shirt}" @input="${this.updateProperty('shirt')}"></wired-input>
   
           <label for="skin">Skin:</label>
-          <input type="number" min="0" max="9" value="${this.skin}" @input="${this.updateProperty('skin')}">
+          <wired-input type="number" min="0" max="9" value="${this.skin}" @input="${this.updateProperty('skin')}"></wired-input>
   
           <label for="hatColor">Hat Color:</label>
-          <input type="number" min="0" max="9" value="${this.hatColor}" @input="${this.updateProperty('hatColor')}">
+          <wired-input type="number" min="0" max="9" value="${this.hatColor}" @input="${this.updateProperty('hatColor')}"></wired-input>
+
+          <label for="size">Size:</label>
+          <input type="range" min="100" max="1000" value="${this.size}" @change="${this.updateProperty('size')}">
   
           <label for="hat">Hat:</label>
           <select value="${this.hat}" @change="${this.updateProperty('hat')}">
@@ -182,7 +237,7 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
   
           <label for="circle">Circle:</label>
           <input type="checkbox" .checked="${this.circle}" @change="${this.updateProperty('circle')}">
-  
+
         </div>
       </div>
     `;
@@ -209,6 +264,16 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
       this[property] = value;
       this.updateSeed();
     };
+  }
+
+  generateShareLink() {
+    const baseUrl = window.location.origin + window.location.pathname;
+    const shareUrl = `${baseUrl}?seed=${this.seed}&hat=${this.hat}&fire=${this.fire}&walking=${this.walking}&circle=${this.circle}&literalseed=${this.literalseed}`;
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      alert("Link copied to clipboard: " + shareUrl);
+    }).catch(() => {
+      alert("Failed to copy link to clipboard. Here it is: " + shareUrl);
+    });
   }
 
   /**
