@@ -2,6 +2,7 @@ import { LitElement, html, css } from "lit";
 import { DDDSuper } from "@haxtheweb/d-d-d/d-d-d.js";
 import { I18NMixin } from "@haxtheweb/i18n-manager/lib/I18NMixin.js";
 import './node_modules/@haxtheweb/rpg-character/rpg-character.js';
+import 'wired-elements';
 
 /**
  * `rpg-me`
@@ -32,6 +33,7 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
     this.fire = false; 
     this.walking = false; 
     this.circle = false; 
+    this.initializeFromUrl();
   }
 
   // Lit reactive properties
@@ -54,6 +56,43 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
       walking: { type: Boolean },
       circle: { type: Boolean },
     };
+  }
+
+  initializeFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("seed")) {
+      this.seed = params.get("seed");
+    }
+    if (params.has("hat")) {
+      this.hat = params.get("hat");
+    }
+    if (params.has("fire")) {
+      this.fire = params.get("fire") === "true";
+    }
+    if (params.has("literalseed")) {
+      this.literalseed = params.get("literalseed") === "true";
+    }
+    if (params.has("walking")) {
+      this.walking = params.get("walking") === "true";
+    }
+    if (params.has("circle")) {
+      this.circle = params.get("circle") === "true";
+    }
+    // Decode seed into character properties
+    if (this.seed.length === 9) {
+      const seedArray = Array.from(this.seed).map(Number);
+      [
+        this.accessories,
+        this.base,
+        this.face,
+        this.faceItem,
+        this.hair,
+        this.pants,
+        this.shirt,
+        this.skin,
+        this.hatColor,
+      ] = seedArray;
+    }
   }
 
   // Lit scoped styles
@@ -129,37 +168,55 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
           ></rpg-character>
           <div class="seed-display">
             <strong>Seed:</strong> ${this.seed}
+            <br />
+            <wired-button @click="${this.generateShareLink}">Generate Share Link</wired-button>
           </div>
         </div>
         <div class="controls">
           <label for="accessories">Accessories:</label>
-          <input type="number" min="0" max="9" value="${this.accessories}" @input="${this.updateProperty('accessories')}">
+          <wired-input type="number" min="0" max="9" value="${this.accessories}" @input="${this.updateProperty('accessories')}"></wired-input>
   
           <label for="base">Base:</label>
-          <input type="number" min="0" max="9" value="${this.base}" @input="${this.updateProperty('base')}">
+          <wired-input type="number" min="0" max="9" value="${this.base}" @input="${this.updateProperty('base')}"></wired-input>
   
           <label for="face">Face:</label>
-          <input type="number" min="0" max="9" value="${this.face}" @input="${this.updateProperty('face')}">
+          <wired-input type="number" min="0" max="9" value="${this.face}" @input="${this.updateProperty('face')}"></wired-input>
   
           <label for="faceItem">Face Item:</label>
-          <input type="number" min="0" max="9" value="${this.faceItem}" @input="${this.updateProperty('faceItem')}">
+          <wired-input type="number" min="0" max="9" value="${this.faceItem}" @input="${this.updateProperty('faceItem')}"></wired-input>
   
           <label for="hair">Hair:</label>
-          <input type="number" min="0" max="9" value="${this.hair}" @input="${this.updateProperty('hair')}">
+          <wired-input type="number" min="0" max="9" value="${this.hair}" @input="${this.updateProperty('hair')}"></wired-input>
   
           <label for="pants">Pants:</label>
-          <input type="number" min="0" max="9" value="${this.pants}" @input="${this.updateProperty('pants')}">
+          <wired-input type="number" min="0" max="9" value="${this.pants}" @input="${this.updateProperty('pants')}"></wired-input>
   
           <label for="shirt">Shirt:</label>
-          <input type="number" min="0" max="9" value="${this.shirt}" @input="${this.updateProperty('shirt')}">
+          <wired-input type="number" min="0" max="9" value="${this.shirt}" @input="${this.updateProperty('shirt')}"></wired-input>
   
           <label for="skin">Skin:</label>
-          <input type="number" min="0" max="9" value="${this.skin}" @input="${this.updateProperty('skin')}">
+          <wired-input type="number" min="0" max="9" value="${this.skin}" @input="${this.updateProperty('skin')}"></wired-input>
   
           <label for="hatColor">Hat Color:</label>
-          <input type="number" min="0" max="9" value="${this.hatColor}" @input="${this.updateProperty('hatColor')}">
+          <wired-input type="number" min="0" max="9" value="${this.hatColor}" @input="${this.updateProperty('hatColor')}"></wired-input>
   
-          <label for="hat">Hat:</label>
+          <!-- <label for="hat">Hat:</label>
+          <wired-combo id ="hat" selected="${this.hat}" @change="${this.updateProperty('hat')}">
+            <wired-item value="none">None</wired-item>
+            <wired-item value="bunny">Bunny</wired-item>
+            <wired-item value="coffee">Coffee</wired-item>
+            <wired-item value="construction">Construction</wired-item>
+            <wired-item value="cowboy">Cowboy</wired-item>
+            <wired-item value="education">Education</wired-item>
+            <wired-item value="knight">Knight</wired-item>
+            <wired-item value="ninja">Ninja</wired-item>
+            <wired-item value="party">Party</wired-item>
+            <wired-item value="pirate">Pirate</wired-item>
+            <wired-item value="watermelon">Watermelon</wired-item>
+          </wired-combo>
+           Right now, the drop down does not work if I use wiredJS so the one below is without the WiredJS-->
+
+           <label for="hat">Hat:</label>
           <select value="${this.hat}" @change="${this.updateProperty('hat')}">
             <option value="none" ?selected="${this.hat === 'none'}">None</option>
             <option value="bunny" ?selected="${this.hat === 'bunny'}">Bunny</option>
@@ -173,15 +230,15 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
             <option value="pirate" ?selected="${this.hat === 'pirate'}">Pirate</option>
             <option value="watermelon" ?selected="${this.hat === 'watermelon'}">Watermelon</option>
           </select>
-  
+
           <label for="fire">On Fire:</label>
-          <input type="checkbox" .checked="${this.fire}" @change="${this.updateProperty('fire')}">
-  
+          <wired-checkbox id="fire" .checked="${this.fire}" @change="${this.updateProperty('fire')}"></wired-checkbox>
+    
           <label for="walking">Walking:</label>
-          <input type="checkbox" .checked="${this.walking}" @change="${this.updateProperty('walking')}">
+          <wired-checkbox id="walking" .checked="${this.walking}" @change="${this.updateProperty('walking')}"></wired-checkbox>
   
           <label for="circle">Circle:</label>
-          <input type="checkbox" .checked="${this.circle}" @change="${this.updateProperty('circle')}">
+          <wired-checkbox id="circle" .checked="${this.circle}" @change="${this.updateProperty('circle')}"></wired-checkbox>
   
         </div>
       </div>
@@ -205,10 +262,20 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
 
   updateProperty(property) {
     return (e) => {
-      const value = e.target.type === "checkbox" ? e.target.checked : e.target.value;
+      const value = e.detail?.value ?? (e.target.checked !== undefined ? e.target.checked : e.target.value);
       this[property] = value;
       this.updateSeed();
     };
+  }  
+
+  generateShareLink() {
+    const baseUrl = window.location.origin + window.location.pathname;
+    const shareUrl = `${baseUrl}?seed=${this.seed}&hat=${this.hat}&fire=${this.fire}&walking=${this.walking}&circle=${this.circle}&literalseed=${this.literalseed}`;
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      alert("Link copied to clipboard: " + shareUrl);
+    }).catch(() => {
+      alert("Failed to copy link to clipboard. Here it is: " + shareUrl);
+    });
   }
 
   /**
